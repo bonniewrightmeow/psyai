@@ -81,7 +81,7 @@ export default function PatientChatInterface({
             {messages.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <Bot className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p className="text-lg font-medium">Welcome to PsyAI</p>
+                <p className="text-lg font-medium">Welcome to Pimm</p>
                 <p className="text-sm mt-1">
                   I'm here to provide mental health support with expert oversight.
                   How are you feeling today?

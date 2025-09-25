@@ -1,4 +1,4 @@
-# PsyAI Platform Design Guidelines
+# Pimm Platform Design Guidelines
 
 ## Design Approach
 **Reference-Based Approach**: Medical/Healthcare platforms like Headspace Health, BetterHelp, and Teladoc Health for professional therapeutic interfaces, combined with modern productivity tools like Linear and Notion for expert dashboards.

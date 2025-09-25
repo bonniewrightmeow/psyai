@@ -10,6 +10,9 @@ import ThemeToggle from "@/components/ThemeToggle";
 import PatientChat from "@/pages/PatientChat";
 import ExpertDashboardPage from "@/pages/ExpertDashboardPage";
 import PatientSessions from "@/pages/PatientSessions";
+import MessageDetailView from "@/pages/MessageDetailView";
+import ReviewView from "@/pages/ReviewView";
+import EscalationView from "@/pages/EscalationView";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/not-found";
 import { useState } from "react";
@@ -27,6 +30,9 @@ function Router({ userRole }: { userRole: "patient" | "expert" }) {
       <Route path="/dashboard" component={ExpertDashboardPage} />
       <Route path="/cases" component={() => <ExpertDashboardPage />} />
       <Route path="/conversations" component={() => <ExpertDashboardPage />} />
+      <Route path="/messages/:id" component={MessageDetailView} />
+      <Route path="/review/:id" component={ReviewView} />
+      <Route path="/escalation/:id" component={EscalationView} />
       <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
@@ -60,7 +66,7 @@ function App() {
                   <div className="flex items-center gap-4">
                     <SidebarTrigger data-testid="button-sidebar-toggle" />
                     <div className="flex items-center gap-2">
-                      <h2 className="font-semibold text-sm text-muted-foreground">PsyAI Demo</h2>
+                      <h2 className="font-semibold text-sm text-muted-foreground">Pimm Demo</h2>
                       <div className="h-4 w-px bg-border" />
                       <Button 
                         variant="outline" 

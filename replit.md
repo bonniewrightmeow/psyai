@@ -1,8 +1,8 @@
-# PsyAI - AI-Assisted Mental Health Platform
+# Pimm - AI-Assisted Mental Health Platform
 
 ## Overview
 
-PsyAI is a comprehensive mental health platform that combines AI-powered therapeutic conversations with expert oversight. The system facilitates secure patient-AI interactions while providing mental health professionals with tools to monitor, review, and intervene when necessary. The platform features real-time confidence scoring, expert annotation capabilities, and a dual-interface design that serves both patients seeking support and experts providing oversight.
+Pimm is a comprehensive mental health platform that combines AI-powered therapeutic conversations with expert oversight. The system facilitates secure patient-AI interactions while providing mental health professionals with tools to monitor, review, and intervene when necessary. The platform features real-time confidence scoring, expert annotation capabilities, and a dual-interface design that serves both patients seeking support and experts providing oversight.
 
 ## User Preferences
 
