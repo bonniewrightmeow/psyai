@@ -17,6 +17,8 @@ export interface MedicalDashboardProps {
   onReviewConversation?: (id: string) => void;
   onEscalateToDoctor?: (id: string) => void;
   className?: string;
+  pageTitle?: string;
+  pageSubtitle?: string;
 }
 
 export default function MedicalDashboard({
@@ -27,6 +29,8 @@ export default function MedicalDashboard({
   onReviewConversation,
   onEscalateToDoctor,
   className,
+  pageTitle,
+  pageSubtitle,
 }: MedicalDashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("by-confidence");
@@ -90,10 +94,10 @@ export default function MedicalDashboard({
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold" data-testid="dashboard-title">
-              {userRole === "nurse" ? "Nurse Dashboard" : "Doctor Dashboard"}
+              {pageTitle || (userRole === "nurse" ? "Nurse Dashboard" : "Doctor Dashboard")}
             </h1>
             <p className="text-muted-foreground" data-testid="user-name">
-              Welcome back, {userName}
+              {pageSubtitle || `Welcome back, ${userName}`}
             </p>
           </div>
           <div className="flex gap-2">
