@@ -14,6 +14,7 @@ export interface DetailedConfidenceProps {
   showOverall?: boolean;
   showDetails?: boolean;
   size?: "sm" | "md" | "lg";
+  compact?: boolean; // When true, don't render Card wrapper
   className?: string;
 }
 
@@ -34,6 +35,7 @@ export default function DetailedConfidenceIndicator({
   showOverall = true,
   showDetails = true,
   size = "md",
+  compact = false,
   className,
 }: DetailedConfidenceProps) {
   const getConfidenceLevel = (score: number) => {
@@ -55,31 +57,31 @@ export default function DetailedConfidenceIndicator({
   const metrics: ConfidenceMetric[] = [
     {
       name: "Decision Alignment",
-      score: decisionAlignment,
+      score: decisionAlignment ?? null,
       description: "Alignment with clinical protocols and guidelines",
       icon: Target,
     },
     {
       name: "Clinical Accuracy", 
-      score: clinicalAccuracy,
+      score: clinicalAccuracy ?? null,
       description: "Medical soundness and correctness of response",
       icon: Stethoscope,
     },
     {
       name: "Safety Assessment",
-      score: safetyAssessment, 
+      score: safetyAssessment ?? null, 
       description: "Safety of recommendations and risk management",
       icon: Shield,
     },
     {
       name: "Context Understanding",
-      score: contextUnderstanding,
+      score: contextUnderstanding ?? null,
       description: "AI's comprehension of patient situation",
       icon: Brain,
     },
     {
       name: "Response Appropriateness",
-      score: responseAppropriateness,
+      score: responseAppropriateness ?? null,
       description: "Tone, empathy, and communication suitability",
       icon: MessageCircle,
     },
@@ -87,34 +89,94 @@ export default function DetailedConfidenceIndicator({
 
   const hasDetailedScores = metrics.some(metric => metric.score !== null && metric.score !== undefined);
 
+  const overallContent = showOverall && (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-muted-foreground">Overall AI Confidence</span>
+        <span className={overallConfidence.color} data-testid="overall-confidence-score">
+          {overallScore}%
+        </span>
+      </div>
+      
+      <Progress value={overallScore} className={progressHeight} data-testid="overall-confidence-progress" />
+      
+      <div className="flex items-center gap-2">
+        <Badge 
+          variant="outline" 
+          className={cn(overallConfidence.bg, overallConfidence.color, overallConfidence.border)}
+          data-testid="overall-confidence-badge"
+        >
+          {getOverallIcon(overallConfidence.level)}
+          <span className="ml-1">
+            {overallConfidence.level.charAt(0).toUpperCase() + overallConfidence.level.slice(1)} Confidence
+          </span>
+        </Badge>
+      </div>
+    </div>
+  );
+
+  const detailsContent = showDetails && hasDetailedScores && (
+    <div className="space-y-4">
+      {!compact && (
+        <h4 className="text-sm font-medium">Confidence Breakdown</h4>
+      )}
+      {metrics.map((metric) => {
+        if (metric.score === null || metric.score === undefined) return null;
+        
+        const confidence = getConfidenceLevel(metric.score);
+        const IconComponent = metric.icon;
+        
+        return (
+          <div key={metric.name} className="space-y-2">
+            <div className="flex items-center gap-2">
+              <IconComponent className="h-4 w-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">{metric.name}</span>
+                  <span className={cn("text-sm font-medium", confidence.color)}>
+                    {metric.score}%
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {metric.description}
+                </p>
+              </div>
+            </div>
+            <Progress 
+              value={metric.score} 
+              className={progressHeight}
+              data-testid={`progress-${metric.name.toLowerCase().replace(' ', '-')}`}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+
+  const noDataContent = showDetails && !hasDetailedScores && (
+    <div className="text-center text-muted-foreground">
+      <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
+      <p className="text-sm">Detailed confidence breakdown not available</p>
+      <p className="text-xs mt-1">Only overall confidence score is provided</p>
+    </div>
+  );
+
+  if (compact) {
+    return (
+      <div className={cn("space-y-4", className)} data-testid="detailed-confidence-indicator">
+        {overallContent}
+        {detailsContent}
+        {noDataContent}
+      </div>
+    );
+  }
+
   return (
     <div className={cn("space-y-4", className)} data-testid="detailed-confidence-indicator">
       {showOverall && (
         <Card>
           <CardContent className="pt-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Overall AI Confidence</span>
-                <span className={overallConfidence.color} data-testid="overall-confidence-score">
-                  {overallScore}%
-                </span>
-              </div>
-              
-              <Progress value={overallScore} className={progressHeight} data-testid="overall-confidence-progress" />
-              
-              <div className="flex items-center gap-2">
-                <Badge 
-                  variant="outline" 
-                  className={cn(overallConfidence.bg, overallConfidence.color, overallConfidence.border)}
-                  data-testid="overall-confidence-badge"
-                >
-                  {getOverallIcon(overallConfidence.level)}
-                  <span className="ml-1">
-                    {overallConfidence.level.charAt(0).toUpperCase() + overallConfidence.level.slice(1)} Confidence
-                  </span>
-                </Badge>
-              </div>
-            </div>
+            {overallContent}
           </CardContent>
         </Card>
       )}
@@ -124,37 +186,8 @@ export default function DetailedConfidenceIndicator({
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Confidence Breakdown</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {metrics.map((metric) => {
-              if (metric.score === null || metric.score === undefined) return null;
-              
-              const confidence = getConfidenceLevel(metric.score);
-              const IconComponent = metric.icon;
-              
-              return (
-                <div key={metric.name} className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <IconComponent className="h-4 w-4 text-muted-foreground" />
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">{metric.name}</span>
-                        <span className={cn("text-sm font-medium", confidence.color)}>
-                          {metric.score}%
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {metric.description}
-                      </p>
-                    </div>
-                  </div>
-                  <Progress 
-                    value={metric.score} 
-                    className={progressHeight}
-                    data-testid={`progress-${metric.name.toLowerCase().replace(' ', '-')}`}
-                  />
-                </div>
-              );
-            })}
+          <CardContent>
+            {detailsContent}
           </CardContent>
         </Card>
       )}
@@ -162,11 +195,7 @@ export default function DetailedConfidenceIndicator({
       {showDetails && !hasDetailedScores && (
         <Card>
           <CardContent className="pt-4">
-            <div className="text-center text-muted-foreground">
-              <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">Detailed confidence breakdown not available</p>
-              <p className="text-xs mt-1">Only overall confidence score is provided</p>
-            </div>
+            {noDataContent}
           </CardContent>
         </Card>
       )}

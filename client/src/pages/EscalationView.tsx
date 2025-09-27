@@ -12,6 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import ChatMessage from '@/components/ChatMessage';
+import DetailedConfidenceIndicator from '@/components/DetailedConfidenceIndicator';
 
 interface EscalationCase {
   id: string;
@@ -166,8 +167,14 @@ export default function EscalationView() {
                 </span>
                 <div className="flex items-center gap-2">
                   {getUrgencyBadge(escalationCase.urgencyLevel)}
-                  {getConfidenceBadge(escalationCase.confidenceScore)}
                 </div>
+                <DetailedConfidenceIndicator
+                  overallScore={escalationCase.confidenceScore}
+                  showOverall={true}
+                  showDetails={false}
+                  size="sm"
+                  compact={true}
+                />
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">

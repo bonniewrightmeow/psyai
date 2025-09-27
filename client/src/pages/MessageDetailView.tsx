@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import ChatMessage from '@/components/ChatMessage';
+import DetailedConfidenceIndicator from '@/components/DetailedConfidenceIndicator';
 
 interface MessageDetailResponse {
   conversation: {
@@ -16,6 +17,11 @@ interface MessageDetailResponse {
     title: string;
     status: 'active' | 'pending_review' | 'reviewed' | 'closed';
     confidenceScore: number | null;
+    avgDecisionAlignment?: number | null;
+    avgClinicalAccuracy?: number | null;
+    avgSafetyAssessment?: number | null;
+    avgContextUnderstanding?: number | null;
+    avgResponseAppropriateness?: number | null;
     needsNurseReview: boolean;
     needsDoctorReview: boolean;
     nurseReviewedBy: string | null;
@@ -226,15 +232,6 @@ export default function MessageDetailView() {
                 <span className="text-sm font-medium">Status</span>
                 {getStatusBadge(conversation.status)}
               </div>
-              
-              {conversation.confidenceScore && (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">AI Confidence</span>
-                  {getConfidenceBadge(conversation.confidenceScore)}
-                </div>
-              )}
-
-              <Separator />
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -281,6 +278,22 @@ export default function MessageDetailView() {
               )}
             </CardContent>
           </Card>
+
+          {/* AI Confidence Analysis */}
+          {conversation.confidenceScore !== null && conversation.confidenceScore !== undefined && (
+            <DetailedConfidenceIndicator
+              overallScore={conversation.confidenceScore}
+              decisionAlignment={conversation.avgDecisionAlignment}
+              clinicalAccuracy={conversation.avgClinicalAccuracy}
+              safetyAssessment={conversation.avgSafetyAssessment}
+              contextUnderstanding={conversation.avgContextUnderstanding}
+              responseAppropriateness={conversation.avgResponseAppropriateness}
+              showOverall={true}
+              showDetails={true}
+              size="sm"
+              compact={false}
+            />
+          )}
 
           {/* Actions */}
           <Card>

@@ -13,6 +13,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import ChatMessage from '@/components/ChatMessage';
+import DetailedConfidenceIndicator from '@/components/DetailedConfidenceIndicator';
 
 interface ReviewCase {
   id: string;
@@ -161,8 +162,13 @@ export default function ReviewView() {
                   <p>{reviewCase.timestamp}</p>
                 </div>
                 <div>
-                  <p className="font-medium text-muted-foreground">AI Confidence</p>
-                  <p>{reviewCase.confidenceScore}%</p>
+                  <DetailedConfidenceIndicator
+                    overallScore={reviewCase.confidenceScore}
+                    showOverall={true}
+                    showDetails={false}
+                    size="sm"
+                    compact={true}
+                  />
                 </div>
                 <div>
                   <p className="font-medium text-muted-foreground">Review Type</p>
@@ -195,7 +201,7 @@ export default function ReviewView() {
             <CardContent>
               <ScrollArea className="h-[400px]" data-testid="review-messages-scroll">
                 <div className="space-y-4">
-                  {reviewCase.messages.map((message) => (
+                  {reviewCase.messages.map((message: any) => (
                     <div key={message.id} className="space-y-2">
                       <div className={`${message.flagged ? 'ring-2 ring-warning/20 rounded-lg p-2' : ''}`}>
                         <ChatMessage
