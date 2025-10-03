@@ -18,20 +18,31 @@ export default function ConfidenceIndicator({
   size = "md",
   className,
 }: ConfidenceIndicatorProps) {
-  const getConfidenceLevel = (score: number) => {
-    if (score >= 80) return { level: "high", color: "text-success", bg: "bg-success/10", border: "border-success/20" };
-    if (score >= 60) return { level: "medium", color: "text-warning", bg: "bg-warning/10", border: "border-warning/20" };
-    return { level: "low", color: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/20" };
+  const getConfidenceStatus = (score: number) => {
+    // Pass/Fail threshold at 90%
+    if (score >= 90) return { 
+      status: "pass", 
+      label: "Pass",
+      color: "text-success", 
+      bg: "bg-success/10", 
+      border: "border-success/20" 
+    };
+    return { 
+      status: "fail", 
+      label: "Fail",
+      color: "text-destructive", 
+      bg: "bg-destructive/10", 
+      border: "border-destructive/20" 
+    };
   };
 
-  const getIcon = (level: string) => {
+  const getIcon = (status: string) => {
     const iconSize = size === "sm" ? "h-3 w-3" : size === "lg" ? "h-5 w-5" : "h-4 w-4";
-    if (level === "high") return <CheckCircle className={iconSize} />;
-    if (level === "medium") return <AlertCircle className={iconSize} />;
+    if (status === "pass") return <CheckCircle className={iconSize} />;
     return <AlertTriangle className={iconSize} />;
   };
 
-  const confidence = getConfidenceLevel(score);
+  const confidence = getConfidenceStatus(score);
   const progressHeight = size === "sm" ? "h-1" : size === "lg" ? "h-2" : "h-1.5";
 
   return (
@@ -39,7 +50,7 @@ export default function ConfidenceIndicator({
       <div className="flex items-center justify-between text-sm">
         <span className="text-muted-foreground">AI Confidence</span>
         <span className={confidence.color} data-testid="confidence-score">
-          {score}%
+          {confidence.label}
         </span>
       </div>
       
@@ -52,9 +63,9 @@ export default function ConfidenceIndicator({
             className={cn(confidence.bg, confidence.color, confidence.border)}
             data-testid="confidence-badge"
           >
-            {showIcon && getIcon(confidence.level)}
+            {showIcon && getIcon(confidence.status)}
             <span className={showIcon ? "ml-1" : ""}>
-              {confidence.level.charAt(0).toUpperCase() + confidence.level.slice(1)} Confidence
+              {confidence.label}
             </span>
           </Badge>
         </div>
