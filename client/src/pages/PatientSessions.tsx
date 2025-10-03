@@ -98,11 +98,11 @@ export default function PatientSessions() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-warning/10 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-warning" />
+              <div className="p-2 bg-destructive/10 rounded-lg">
+                <TrendingUp className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <p className="text-2xl font-bold">84%</p>
+                <p className="text-2xl font-bold">Fail</p>
                 <p className="text-xs text-muted-foreground">Avg AI Confidence</p>
               </div>
             </div>
