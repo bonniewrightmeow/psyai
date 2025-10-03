@@ -160,7 +160,9 @@ export default function PatientSessions() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">
-                    AI Confidence: <span className="font-medium">{session.aiConfidence}%</span>
+                    AI Confidence: <span className={`font-medium ${session.aiConfidence >= 90 ? 'text-success' : 'text-destructive'}`}>
+                      {session.aiConfidence >= 90 ? 'Pass' : 'Fail'}
+                    </span>
                   </p>
                 </div>
                 

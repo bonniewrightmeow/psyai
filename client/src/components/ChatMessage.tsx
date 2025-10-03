@@ -46,15 +46,15 @@ export default function ChatMessage({
   };
 
   const getConfidenceColor = (score: number) => {
-    if (score >= 80) return "text-success";
-    if (score >= 60) return "text-warning";
+    // Pass/Fail threshold at 90%
+    if (score >= 90) return "text-success";
     return "text-destructive";
   };
 
   const getConfidenceBadge = (score: number) => {
-    if (score >= 80) return <Badge variant="outline" className="bg-success/10 text-success border-success/20">High Confidence</Badge>;
-    if (score >= 60) return <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20">Medium Confidence</Badge>;
-    return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">Low Confidence</Badge>;
+    // Pass/Fail threshold at 90%
+    if (score >= 90) return <Badge variant="outline" className="bg-success/10 text-success border-success/20"><CheckCircle className="h-3 w-3 mr-1" />Pass</Badge>;
+    return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20"><AlertTriangle className="h-3 w-3 mr-1" />Fail</Badge>;
   };
 
   return (
