@@ -59,7 +59,7 @@ function App() {
             <div className="flex h-screen w-full">
               <AppSidebar 
                 userRole={userRole} 
-                userName={userRole === "patient" ? "Sarah Johnson" : "Dr. Sarah Wilson"}
+                userName={userRole === "patient" ? "Sarah Johnson" : "Nurse Jennifer Adams"}
               />
               <div className="flex flex-col flex-1">
                 <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

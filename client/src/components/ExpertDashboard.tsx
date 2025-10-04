@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertTriangle, CheckCircle, Clock, Search, Filter, TrendingDown } from "lucide-react";
 import ConversationCard, { type ConversationCardProps } from "./ConversationCard";
@@ -33,54 +32,24 @@ export default function MedicalDashboard({
   pageSubtitle,
 }: MedicalDashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("by-confidence");
 
-  // Filter and sort conversations based on search and tab
-  const getFilteredConversations = () => {
-    let filtered = conversations.filter(conv => {
+  // Calculate counts for stats cards
+  const counts = {
+    pending: userRole === "nurse" 
+      ? conversations.filter(c => c.status === "pending_review" || c.needsNurseReview).length
+      : conversations.filter(c => c.needsDoctorReview || c.escalatedToDoctor).length,
+    active: conversations.filter(c => c.status === "active").length,
+    reviewed: conversations.filter(c => c.status === "reviewed").length,
+  };
+  
+  // Filter and sort conversations based on search - always rank by confidence (lowest first)
+  const filteredConversations = conversations
+    .filter(conv => {
       const matchesSearch = conv.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            conv.patientName.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      switch (activeTab) {
-        case "pending":
-          // Nurses see cases needing nurse review, Doctors see cases needing doctor review or escalated cases
-          if (userRole === "nurse") {
-            return matchesSearch && (conv.status === "pending_review" || conv.needsNurseReview);
-          } else {
-            return matchesSearch && (conv.needsDoctorReview || conv.escalatedToDoctor);
-          }
-        case "active":
-          return matchesSearch && conv.status === "active";
-        case "reviewed":
-          return matchesSearch && conv.status === "reviewed";
-        case "by-confidence":
-          return matchesSearch; // Show all for confidence ranking
-        default:
-          return matchesSearch;
-      }
-    });
-
-    // Sort by confidence score if in confidence tab (lowest first)
-    if (activeTab === "by-confidence") {
-      filtered = filtered.sort((a, b) => (a.confidenceScore || 100) - (b.confidenceScore || 100));
-    }
-
-    return filtered;
-  };
-
-  const filteredConversations = getFilteredConversations();
-
-  // Get counts for each tab based on user role
-  const getCounts = () => {
-    const pending = userRole === "nurse" 
-      ? conversations.filter(c => c.status === "pending_review" || c.needsNurseReview).length
-      : conversations.filter(c => c.needsDoctorReview || c.escalatedToDoctor).length;
-    const active = conversations.filter(c => c.status === "active").length;
-    const reviewed = conversations.filter(c => c.status === "reviewed").length;
-    return { pending, active, reviewed };
-  };
-
-  const counts = getCounts();
+      return matchesSearch;
+    })
+    .sort((a, b) => (a.confidenceScore || 100) - (b.confidenceScore || 100));
 
   // Get priority conversations based on role - using <90% threshold for nurse triage
   const priorityConversations = userRole === "nurse" 
@@ -180,69 +149,41 @@ export default function MedicalDashboard({
         />
       </div>
 
-      {/* Conversation Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="by-confidence" className="relative" data-testid="tab-by-confidence">
-            <TrendingDown className="h-4 w-4 mr-1" />
-            By Confidence
-          </TabsTrigger>
-          <TabsTrigger value="pending" className="relative" data-testid="tab-pending">
-            Pending Review
-            {counts.pending > 0 && (
-              <Badge variant="destructive" className="ml-2 h-5 w-5 p-0 text-xs">
-                {counts.pending}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="active" data-testid="tab-active">
-            Active ({counts.active})
-          </TabsTrigger>
-          <TabsTrigger value="reviewed" data-testid="tab-reviewed">
-            Reviewed ({counts.reviewed})
-          </TabsTrigger>
-          <TabsTrigger value="all" data-testid="tab-all">
-            All ({conversations.length})
-          </TabsTrigger>
-        </TabsList>
+      {/* Info Banner */}
+      <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+        <div className="flex items-center gap-2">
+          <TrendingDown className="h-4 w-4 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">
+            Cases ranked by confidence score (lowest first). Cases below 90% require nurse review.
+          </p>
+        </div>
+      </div>
 
-        <TabsContent value={activeTab} className="mt-6">
-          {activeTab === "by-confidence" && (
-            <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-              <div className="flex items-center gap-2">
-                <TrendingDown className="h-4 w-4 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
-                  Cases ranked by confidence score (lowest first). Cases below 90% require nurse review.
-                </p>
-              </div>
+      {/* Conversations List */}
+      <ScrollArea className="h-[600px]" data-testid="conversations-scroll">
+        <div className="space-y-4 pr-4">
+          {filteredConversations.length === 0 ? (
+            <div className="text-center py-12">
+              <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-medium">No conversations found</h3>
+              <p className="text-muted-foreground mt-2">
+                {searchQuery ? "Try adjusting your search criteria" : "No conversations available"}
+              </p>
             </div>
+          ) : (
+            filteredConversations.map((conversation) => (
+              <ConversationCard
+                key={conversation.id}
+                {...conversation}
+                viewerRole={userRole}
+                onView={() => onViewConversation?.(conversation.id)}
+                onReview={() => onReviewConversation?.(conversation.id)}
+                onEscalate={userRole === "nurse" ? () => onEscalateToDoctor?.(conversation.id) : undefined}
+              />
+            ))
           )}
-          <ScrollArea className="h-[600px]" data-testid="conversations-scroll">
-            <div className="space-y-4 pr-4">
-              {filteredConversations.length === 0 ? (
-                <div className="text-center py-12">
-                  <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-medium">No conversations found</h3>
-                  <p className="text-muted-foreground mt-2">
-                    {searchQuery ? "Try adjusting your search criteria" : "No conversations match this filter"}
-                  </p>
-                </div>
-              ) : (
-                filteredConversations.map((conversation) => (
-                  <ConversationCard
-                    key={conversation.id}
-                    {...conversation}
-                    viewerRole={userRole}
-                    onView={() => onViewConversation?.(conversation.id)}
-                    onReview={() => onReviewConversation?.(conversation.id)}
-                    onEscalate={userRole === "nurse" ? () => onEscalateToDoctor?.(conversation.id) : undefined}
-                  />
-                ))
-              )}
-            </div>
-          </ScrollArea>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </ScrollArea>
     </div>
   );
 }

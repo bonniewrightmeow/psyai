@@ -40,7 +40,7 @@ export interface AppSidebarProps {
 
 export default function AppSidebar({ 
   userRole = "expert", 
-  userName = "Dr. Sarah Wilson" 
+  userName = "Nurse Jennifer Adams" 
 }: AppSidebarProps) {
   const [location, navigate] = useLocation();
 
@@ -65,15 +65,14 @@ export default function AppSidebar({
       badge: 3, // Pending reviews
     },
     {
-      title: "Patient Cases",
-      url: "/cases",
-      icon: Stethoscope,
+      title: "Profile",
+      url: "/profile",
+      icon: User,
     },
     {
-      title: "AI Conversations",
-      url: "/conversations",
-      icon: MessageSquare,
-      badge: 12, // Active conversations
+      title: "Settings",
+      url: "/settings",
+      icon: Settings,
     },
   ];
 
@@ -130,36 +129,9 @@ export default function AppSidebar({
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Settings</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  onClick={() => handleNavigation('/settings')}
-                  data-testid="sidebar-settings"
-                >
-                  <Settings className="h-4 w-4" />
-                  <span>Settings</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="border-t p-4">
-        <div className="flex items-center gap-3 mb-3">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-              {userName.split(' ').map(n => n[0]).join('').toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate" data-testid="user-name">{userName}</p>
-            <p className="text-xs text-muted-foreground capitalize">{userRole}</p>
-          </div>
-        </div>
         <Button 
           variant="outline" 
           size="sm" 

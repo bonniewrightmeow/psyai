@@ -121,36 +121,34 @@ export default function ConversationCard({
             </div>
           </div>
           
-          <div className="flex flex-col items-end gap-2">
-            {getStatusBadge()}
-            {(needsNurseReview || needsExpertReview || needsDoctorReview || escalatedToDoctor) && (
-              <Badge variant="outline" className="bg-chart-2/10 text-chart-2 border-chart-2/20 text-xs">
-                <AlertTriangle className="h-3 w-3 mr-1" />
-                Review Required
-              </Badge>
-            )}
-          </div>
         </div>
       </CardHeader>
       
       <CardContent className="pt-0 space-y-4">
-        {/* Prominent Confidence Score Display */}
-        <div className="flex items-center justify-between p-3 bg-muted/30 rounded-md">
-          <span className="text-sm font-medium text-muted-foreground">AI Confidence</span>
+        {/* Confidence Score Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className={cn(
+            "w-full justify-between",
+            confidenceScore >= 90 
+              ? "bg-success/10 text-success border-success/20" 
+              : "bg-destructive/10 text-destructive border-destructive/20"
+          )}
+          onClick={onView}
+          data-testid="button-confidence"
+        >
           <div className="flex items-center gap-2">
             {confidenceScore >= 90 ? (
-              <CheckCircle className="h-5 w-5 text-success" />
+              <CheckCircle className="h-4 w-4" />
             ) : (
-              <AlertTriangle className="h-5 w-5 text-destructive" />
+              <AlertTriangle className="h-4 w-4" />
             )}
-            <span className={cn(
-              "text-xl font-bold",
-              confidenceScore >= 90 ? "text-success" : "text-destructive"
-            )} data-testid="confidence-score">
+            <span className="font-semibold">
               {confidenceScore >= 90 ? "Pass" : "Fail"} ({confidenceScore}%)
             </span>
           </div>
-        </div>
+        </Button>
         
         <div className="flex gap-2 pt-2">
           <Button 
