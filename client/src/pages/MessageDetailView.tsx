@@ -1,14 +1,17 @@
+import { useState } from 'react';
 import { useRoute } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { ArrowLeft, Clock, Brain, User, Stethoscope } from 'lucide-react';
+import { ArrowLeft, Clock, Brain, User, Stethoscope, ChevronDown, ChevronUp, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import ChatMessage from '@/components/ChatMessage';
 import DetailedConfidenceIndicator from '@/components/DetailedConfidenceIndicator';
+import { cn } from '@/lib/utils';
 
 interface MessageDetailResponse {
   conversation: {
@@ -57,6 +60,7 @@ interface MessageDetailResponse {
 export default function MessageDetailView() {
   const [, params] = useRoute('/messages/:id');
   const messageId = params?.id;
+  const [showConfidenceBreakdown, setShowConfidenceBreakdown] = useState(false);
   
   const queryClient = useQueryClient();
   
@@ -281,18 +285,56 @@ export default function MessageDetailView() {
 
           {/* AI Confidence Analysis */}
           {conversation.confidenceScore !== null && conversation.confidenceScore !== undefined && (
-            <DetailedConfidenceIndicator
-              overallScore={conversation.confidenceScore}
-              decisionAlignment={conversation.avgDecisionAlignment}
-              clinicalAccuracy={conversation.avgClinicalAccuracy}
-              safetyAssessment={conversation.avgSafetyAssessment}
-              contextUnderstanding={conversation.avgContextUnderstanding}
-              responseAppropriateness={conversation.avgResponseAppropriateness}
-              showOverall={true}
-              showDetails={true}
-              size="sm"
-              compact={false}
-            />
+            <Card>
+              <CardContent className="pt-4">
+                <Collapsible open={showConfidenceBreakdown} onOpenChange={setShowConfidenceBreakdown}>
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className={cn(
+                        "w-full justify-between hover-elevate",
+                        conversation.confidenceScore >= 90 
+                          ? "bg-success/10 text-success border-success/20" 
+                          : "bg-destructive/10 text-destructive border-destructive/20"
+                      )}
+                      data-testid="button-toggle-confidence"
+                    >
+                      <div className="flex items-center gap-2">
+                        {conversation.confidenceScore >= 90 ? (
+                          <CheckCircle className="h-5 w-5" />
+                        ) : (
+                          <AlertTriangle className="h-5 w-5" />
+                        )}
+                        <span className="font-bold">
+                          {conversation.confidenceScore >= 90 ? "Pass" : "Fail"} ({conversation.confidenceScore}%)
+                        </span>
+                      </div>
+                      {showConfidenceBreakdown ? (
+                        <ChevronUp className="h-5 w-5" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5" />
+                      )}
+                    </Button>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="mt-4">
+                    <DetailedConfidenceIndicator
+                      overallScore={conversation.confidenceScore}
+                      decisionAlignment={conversation.avgDecisionAlignment}
+                      clinicalAccuracy={conversation.avgClinicalAccuracy}
+                      safetyAssessment={conversation.avgSafetyAssessment}
+                      contextUnderstanding={conversation.avgContextUnderstanding}
+                      responseAppropriateness={conversation.avgResponseAppropriateness}
+                      showOverall={false}
+                      showDetails={true}
+                      size="sm"
+                      compact={true}
+                    />
+                  </CollapsibleContent>
+                </Collapsible>
+              </CardContent>
+            </Card>
           )}
 
           {/* Actions */}

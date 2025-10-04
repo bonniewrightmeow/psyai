@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRoute } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { ArrowLeft, Save, AlertTriangle, CheckCircle, MessageSquare, Brain, User } from 'lucide-react';
+import { ArrowLeft, Save, AlertTriangle, CheckCircle, MessageSquare, Brain, User, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,8 +12,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import ChatMessage from '@/components/ChatMessage';
 import DetailedConfidenceIndicator from '@/components/DetailedConfidenceIndicator';
+import { cn } from '@/lib/utils';
 
 interface ReviewCase {
   id: string;
@@ -47,6 +49,7 @@ export default function ReviewView() {
   const [actionItems, setActionItems] = useState<string[]>([]);
   const [needsFollowUp, setNeedsFollowUp] = useState(false);
   const [escalationReason, setEscalationReason] = useState('');
+  const [showConfidenceBreakdown, setShowConfidenceBreakdown] = useState(false);
   
   // Fetch case data from API
   const { data: caseData, isLoading, error } = useQuery({
@@ -146,7 +149,6 @@ export default function ReviewView() {
                 <span>Case Overview</span>
                 <div className="flex items-center gap-2">
                   {getPriorityBadge(reviewCase.priority)}
-                  {getConfidenceBadge(reviewCase.confidenceScore)}
                 </div>
               </CardTitle>
             </CardHeader>
@@ -160,14 +162,53 @@ export default function ReviewView() {
                   <p className="font-medium text-muted-foreground">Session Time</p>
                   <p>{reviewCase.timestamp}</p>
                 </div>
-                <div>
-                  <DetailedConfidenceIndicator
-                    overallScore={reviewCase.confidenceScore}
-                    showOverall={true}
-                    showDetails={false}
-                    size="sm"
-                    compact={true}
-                  />
+                <div className="col-span-2">
+                  <Collapsible open={showConfidenceBreakdown} onOpenChange={setShowConfidenceBreakdown}>
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className={cn(
+                          "w-full justify-between hover-elevate",
+                          reviewCase.confidenceScore >= 90 
+                            ? "bg-success/10 text-success border-success/20" 
+                            : "bg-destructive/10 text-destructive border-destructive/20"
+                        )}
+                        data-testid="button-toggle-confidence"
+                      >
+                        <div className="flex items-center gap-2">
+                          {reviewCase.confidenceScore >= 90 ? (
+                            <CheckCircle className="h-5 w-5" />
+                          ) : (
+                            <AlertTriangle className="h-5 w-5" />
+                          )}
+                          <span className="font-bold">
+                            {reviewCase.confidenceScore >= 90 ? "Pass" : "Fail"} ({reviewCase.confidenceScore}%)
+                          </span>
+                        </div>
+                        {showConfidenceBreakdown ? (
+                          <ChevronUp className="h-5 w-5" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5" />
+                        )}
+                      </Button>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent className="mt-4">
+                      <DetailedConfidenceIndicator
+                        overallScore={reviewCase.confidenceScore}
+                        decisionAlignment={conversation?.avgDecisionAlignment}
+                        clinicalAccuracy={conversation?.avgClinicalAccuracy}
+                        safetyAssessment={conversation?.avgSafetyAssessment}
+                        contextUnderstanding={conversation?.avgContextUnderstanding}
+                        responseAppropriateness={conversation?.avgResponseAppropriateness}
+                        showOverall={false}
+                        showDetails={true}
+                        size="sm"
+                        compact={true}
+                      />
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
                 <div>
                   <p className="font-medium text-muted-foreground">Review Type</p>
