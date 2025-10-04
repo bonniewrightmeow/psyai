@@ -8,6 +8,36 @@ Pimm is a comprehensive mental health platform that combines AI-powered therapeu
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (October 2025)
+
+### UI Simplification and Confidence-First Design
+Updated the expert dashboard interface to prioritize confidence scores and streamline navigation:
+
+1. **Simplified Sidebar Navigation**:
+   - Reduced sidebar items to only: Dashboard, Profile, Settings
+   - Removed: Patient Cases and AI Conversations pages
+   - Cleaner, more focused navigation for medical staff workflow
+
+2. **Removed Navigation Tabs**:
+   - Eliminated tab-based filtering (By Confidence, Pending Review, Active, Reviewed, All)
+   - Conversations now always displayed sorted by confidence score (lowest first)
+   - Added info banner explaining confidence-based ranking system
+
+3. **Conversation Card Refinements**:
+   - Removed all status badges (Pending Review, Review Required, etc.)
+   - Transformed confidence display from large text to smaller clickable button
+   - Confidence button shows "Pass (XX%)" or "Fail (XX%)" with appropriate icon and color
+   - Clicking confidence button navigates to conversation detail view
+
+4. **User Persona Update**:
+   - Changed primary expert user from "Dr. Sarah Wilson" to "Nurse Jennifer Adams"
+   - Reflects nurse-first triage workflow in medical hierarchy
+
+5. **Dynamic Dashboard Stats**:
+   - Stats cards show real-time counts from conversation data
+   - Pending, Active, Reviewed, and High Priority counts update dynamically
+   - High Priority determined by confidence threshold (<90% for nurses)
+
 ## System Architecture
 
 ### Frontend Architecture
