@@ -95,6 +95,7 @@ Preferred communication style: Simple, everyday language.
 - Uses uv for Python package management
 - Python version constrained to >=3.11,<3.12 to ensure dependency compatibility
 - Special pytorch-cpu index configuration for CPU-only PyTorch installation
+- **Important**: Only torch, torchaudio, and torchvision are configured in [tool.uv.sources] to use the pytorch-cpu index. Other packages (including transformers and its dependencies) are resolved from PyPI. This prevents dependency resolution failures that occur when packages that don't exist on the pytorch-cpu index are incorrectly mapped to it.
 
 ## Future Integration Points
 - Custom Centaur model (currently using BART as placeholder)
