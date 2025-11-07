@@ -2,7 +2,6 @@ import streamlit as st
 from typing import TypedDict
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
-from transformers import pipeline
 from datetime import datetime
 from chat_parser import parse_chat_to_decision
 
@@ -40,6 +39,9 @@ class DecisionState(TypedDict):
 def load_centaur_model():
     """Load the Centaur model from Hugging Face"""
     try:
+        # Import pipeline here to avoid Streamlit import issues
+        from transformers import pipeline
+        
         # Note: Using a zero-shot classification model as a proxy for decision-making
         # Replace with actual Centaur model if available
         model = pipeline(

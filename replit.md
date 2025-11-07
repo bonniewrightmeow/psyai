@@ -138,6 +138,14 @@ Fixed pyproject.toml dependency resolution:
 - Removed 1100+ incorrect package mappings from [tool.uv.sources]
 - Retained only torch, torchaudio, and torchvision for pytorch-cpu index
 - Allows transformers and other packages to resolve correctly from PyPI
+- Transformers downgraded to 4.30.2 for stability
+
+### Streamlit Import Workaround
+Fixed transformers pipeline import issue in Streamlit deployment:
+- Streamlit had import caching issues with `from transformers import pipeline` at module level
+- Solution: Lazy import inside load_centaur_model() function
+- Import works fine in standalone Python but failed in Streamlit's execution context
+- Workaround ensures successful deployment while maintaining full functionality
 
 ## Future Integration Points
 - Custom Centaur model (currently using BART as placeholder)
