@@ -7,6 +7,8 @@ dependencies = [
     "langchain",
     "langchain-core",
     "langgraph",
+    "langgraph-checkpoint>=3.0.1",
+    "openai>=2.7.1",
     "pandas",
     "streamlit>=1.51.0",
     "torch",

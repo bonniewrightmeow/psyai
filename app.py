@@ -4,6 +4,7 @@ from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
 from transformers import pipeline
 from datetime import datetime
+from chat_parser import parse_chat_to_decision
 
 # Initialize session state
 if 'workflow_state' not in st.session_state:
@@ -18,6 +19,10 @@ if 'centaur_model' not in st.session_state:
     st.session_state.centaur_model = None
 if 'workflow_app' not in st.session_state:
     st.session_state.workflow_app = None
+if 'chat_parsed_data' not in st.session_state:
+    st.session_state.chat_parsed_data = None
+if 'chat_message' not in st.session_state:
+    st.session_state.chat_message = ""
 
 # Define the state structure for the workflow
 class DecisionState(TypedDict):
@@ -165,9 +170,132 @@ def main():
             st.write("No decisions yet")
     
     # Main content area
-    tab1, tab2 = st.tabs(["🎯 New Decision", "🔄 Review Prediction"])
+    tab1, tab2, tab3 = st.tabs(["💬 Chat Input", "🎯 New Decision", "🔄 Review Prediction"])
     
     with tab1:
+        st.header("Describe Your Decision")
+        st.markdown("Tell me about your decision in natural language, and I'll extract the scenario and options for you.")
+        
+        # Chat input area
+        chat_message = st.text_area(
+            "Describe your decision:",
+            value=st.session_state.chat_message,
+            placeholder="Example: We're deciding whether to expand to Europe or stay in North America. We could launch in 3 months or wait a year for more data.",
+            height=120,
+            key="chat_input_area"
+        )
+        
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            parse_button = st.button("🔍 Extract Decision", use_container_width=True, type="primary")
+        with col2:
+            clear_button = st.button("🗑️ Clear", use_container_width=True)
+        
+        if clear_button:
+            st.session_state.chat_parsed_data = None
+            st.session_state.chat_message = ""
+            st.rerun()
+        
+        if parse_button:
+            if not chat_message.strip():
+                st.error("Please describe your decision")
+            else:
+                st.session_state.chat_message = chat_message
+                with st.spinner("Analyzing your message..."):
+                    parsed = parse_chat_to_decision(chat_message)
+                    if parsed:
+                        st.session_state.chat_parsed_data = parsed
+                        st.rerun()
+                    else:
+                        st.error("Could not extract decision from your message. Please try rephrasing with clearer options.")
+        
+        # Display and edit extracted decision
+        if st.session_state.chat_parsed_data:
+            st.markdown("---")
+            st.markdown("### ✅ Extracted Decision")
+            
+            with st.form("extracted_decision_form"):
+                parsed_scenario = st.text_area(
+                    "Scenario:",
+                    value=st.session_state.chat_parsed_data.get("scenario", ""),
+                    height=80
+                )
+                
+                st.write("**Options:**")
+                parsed_options = st.session_state.chat_parsed_data.get("options", [])
+                
+                edited_options = []
+                for i, opt in enumerate(parsed_options[:4]):
+                    edited_opt = st.text_input(f"Option {i+1}:", value=opt, key=f"chat_opt_{i}")
+                    if edited_opt.strip():
+                        edited_options.append(edited_opt)
+                
+                # Add empty fields for additional options
+                for i in range(len(parsed_options), 4):
+                    extra_opt = st.text_input(f"Option {i+1} (optional):", key=f"chat_opt_{i}")
+                    if extra_opt.strip():
+                        edited_options.append(extra_opt)
+                
+                col1, col2 = st.columns([1, 1])
+                with col1:
+                    submit_to_centaur = st.form_submit_button("🚀 Get AI Prediction", use_container_width=True, type="primary")
+                with col2:
+                    cancel = st.form_submit_button("❌ Cancel", use_container_width=True)
+                
+                if cancel:
+                    st.session_state.chat_parsed_data = None
+                    st.rerun()
+                
+                if submit_to_centaur:
+                    if not parsed_scenario.strip():
+                        st.error("Please provide a scenario description")
+                    elif len(edited_options) < 2:
+                        st.error("Please provide at least 2 options")
+                    else:
+                        try:
+                            # Get workflow app
+                            workflow_app = get_workflow_app()
+                            
+                            # Initialize state
+                            initial_state = {
+                                "scenario": parsed_scenario,
+                                "options": edited_options,
+                                "model_prediction": "",
+                                "confidence": 0.0,
+                                "human_decision": "",
+                                "human_approved": False,
+                                "timestamp": "",
+                                "status": "initialized"
+                            }
+                            
+                            # Generate thread ID
+                            thread_id = f"decision_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                            st.session_state.current_thread_id = thread_id
+                            config = {"configurable": {"thread_id": thread_id}}
+                            
+                            # Run workflow until interrupt
+                            with st.spinner("AI is analyzing your scenario..."):
+                                result = None
+                                try:
+                                    for event in workflow_app.stream(initial_state, config):
+                                        for node_name, node_state in event.items():
+                                            if isinstance(node_state, dict):
+                                                result = node_state
+                                    
+                                    if result is None:
+                                        st.error("❌ Workflow did not produce any result. Please try again.")
+                                    else:
+                                        st.session_state.workflow_state = result
+                                        st.session_state.chat_parsed_data = None
+                                        st.session_state.chat_message = ""
+                                        st.success("✅ AI prediction ready! Switch to 'Review Prediction' tab.")
+                                        st.rerun()
+                                except Exception as stream_error:
+                                    st.error(f"❌ Workflow execution error: {str(stream_error)}")
+                        except Exception as e:
+                            st.error(f"❌ Error during prediction: {str(e)}")
+    
+    with tab2:
         st.header("Submit a Decision Scenario")
         
         # Input form
@@ -251,7 +379,7 @@ def main():
                         import traceback
                         traceback.print_exc()
     
-    with tab2:
+    with tab3:
         st.header("Review AI Prediction")
         
         if st.session_state.workflow_state and st.session_state.workflow_state.get("status") == "awaiting_human_review":
