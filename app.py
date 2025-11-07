@@ -126,9 +126,7 @@ def build_workflow():
 
 def get_workflow_app():
     """Get or create the workflow app, ensuring the same instance is reused"""
-    if st.session_state.workflow_app is None:
-        st.session_state.workflow_app = build_workflow()
-    return st.session_state.workflow_app
+    return build_workflow()
 
 # Streamlit UI
 def main():
@@ -223,16 +221,30 @@ def main():
                         # Run workflow until interrupt
                         with st.spinner("AI is analyzing your scenario..."):
                             result = None
-                            for event in workflow_app.stream(initial_state, config):
-                                for node_name, node_state in event.items():
-                                    result = node_state
-                            
-                            if result is None:
-                                st.error("❌ Workflow did not produce any result. Please try again.")
-                            else:
-                                st.session_state.workflow_state = result
-                                st.success("✅ AI prediction ready! Switch to 'Review Prediction' tab.")
-                                st.rerun()
+                            try:
+                                for event in workflow_app.stream(initial_state, config):
+                                    for node_name, node_state in event.items():
+                                        if isinstance(node_state, dict):
+                                            print(f"Node: {node_name}, State status: {node_state.get('status', 'no status')}")
+                                            result = node_state
+                                        else:
+                                            print(f"Node: {node_name}, got non-dict state: {type(node_state)}")
+                                
+                                print(f"Final result: {result}")
+                                
+                                if result is None:
+                                    st.error("❌ Workflow did not produce any result. Please try again.")
+                                else:
+                                    st.session_state.workflow_state = result
+                                    final_status = result.get('status', 'unknown')
+                                    print(f"Saved workflow_state with status: {final_status}")
+                                    st.success(f"✅ AI prediction ready! Status: {final_status}. Switch to 'Review Prediction' tab.")
+                                    st.rerun()
+                            except Exception as stream_error:
+                                st.error(f"❌ Workflow execution error: {str(stream_error)}")
+                                print(f"Stream error: {stream_error}")
+                                import traceback
+                                traceback.print_exc()
                     except Exception as e:
                         st.error(f"❌ Error during prediction: {str(e)}")
                         print(f"ERROR: Exception during workflow execution: {e}")
