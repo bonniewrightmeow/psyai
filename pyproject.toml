@@ -2,7 +2,7 @@
 name = "repl-nix-workspace"
 version = "0.1.0"
 description = "Add your description here"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 dependencies = [
     "langchain",
     "langchain-core",
@@ -1061,7 +1061,6 @@ trainer = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 transformer-engine = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 transformer-lens = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 transformer-smaller-training-vocab = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
-transformers = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 transformers-domain-adaptation = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 transfusion-pytorch = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 transparent-background = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
