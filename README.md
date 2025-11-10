@@ -8,14 +8,11 @@ The primary hypothesis is as follows: If an LLM trained on psychology data predi
 
 Work on the PsyAI project aims to further research in the field of Human-in-the-loop applications, and LLM-as-a-judge amongst others. To that effect the PsyAI core team is working towards the goal of running a study in Q1 of 2026 with the outcome being a published paper on this subject. 
 
-Currently, the team has slots open for additional members to the core team, inquire here. Contributors to the codebase are always welcome under MIT creative commons licensing.
+Currently, the team has slots open for additional members, contributors, and advisors on the core team, [inquire here](https://forms.gle/TCPKzSc9Z8H4m8LH7). Contributors to the codebase are always welcome under MIT creative commons licensing.
 
 
-##High-Level Design
-
+## High-Level Design
 
 <img width="1620" height="914" alt="PsyAI High Level Design - Medical Context" src="https://github.com/user-attachments/assets/3a9e7e37-8e7d-497c-b077-fb2936c6d907" />
 
-
-
-Seamless AI to Human conversations attuned on a subconscious level.
+The ultimate goal of this project is to achieve seamless AI to Human conversations attuned on a subconscious level based on foundational components of human cognition.
