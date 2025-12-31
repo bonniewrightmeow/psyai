@@ -11,7 +11,28 @@ echo ""
 
 # Check Python version
 echo "Checking Python version..."
-python_version=$(python3 --version 2>&1 | awk '{print $2}')
+
+# Detect Python command (python3 on Linux/Mac, python on Windows)
+# Test actual execution and check output (Windows python3 alias shows error message)
+PYTHON_CMD=""
+python_test_output=$(python --version 2>&1)
+if [ $? -eq 0 ] && echo "$python_test_output" | grep -q "Python [0-9]"; then
+    PYTHON_CMD="python"
+else
+    python3_test_output=$(python3 --version 2>&1)
+    if [ $? -eq 0 ] && echo "$python3_test_output" | grep -q "Python [0-9]"; then
+        PYTHON_CMD="python3"
+    else
+        echo "Error: Python not found. Please install Python 3.11 or higher."
+        echo "Tried 'python': $python_test_output"
+        echo "Tried 'python3': $python3_test_output"
+        exit 1
+    fi
+fi
+
+# Get version
+python_version_output=$($PYTHON_CMD --version 2>&1)
+python_version=$(echo "$python_version_output" | awk '{print $2}')
 required_version="3.11"
 
 if [ "$(printf '%s\n' "$required_version" "$python_version" | sort -V | head -n1)" != "$required_version" ]; then
@@ -27,14 +48,22 @@ echo "Creating virtual environment..."
 if [ -d "venv" ]; then
     echo "Virtual environment already exists. Skipping..."
 else
-    python3 -m venv venv
+    $PYTHON_CMD -m venv venv
     echo "✓ Virtual environment created"
 fi
 echo ""
 
 # Activate virtual environment
 echo "Activating virtual environment..."
-source venv/bin/activate
+# Windows Git Bash uses Scripts/activate, Linux/Mac uses bin/activate
+if [ -f "venv/Scripts/activate" ]; then
+    source venv/Scripts/activate
+elif [ -f "venv/bin/activate" ]; then
+    source venv/bin/activate
+else
+    echo "Error: Could not find virtual environment activation script"
+    exit 1
+fi
 echo "✓ Virtual environment activated"
 echo ""
 
