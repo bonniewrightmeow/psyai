@@ -61,7 +61,7 @@ bash scripts/setup_dev.sh
 vi .env
 
 # Required keys:
-# - OPENAI_API_KEY
+# - ANTHROPIC_API_KEY
 # - LANGSMITH_API_KEY
 # - CENTAUR_API_KEY (when available)
 ```
