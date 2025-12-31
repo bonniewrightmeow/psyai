@@ -62,24 +62,31 @@ class Settings(BaseSettings):
     redis_password: Optional[str] = Field(default=None, description="Redis password")
     redis_max_connections: int = Field(default=10, description="Max Redis connections")
 
-    # LangChain Configuration
-    openai_api_key: Optional[str] = Field(default=None, description="OpenAI API key")
-    openai_model: str = Field(default="gpt-4", description="OpenAI model")
-    openai_temperature: float = Field(default=0.7, description="Model temperature")
-    openai_max_tokens: int = Field(default=2000, description="Max tokens")
+    # Google Cloud / Vertex AI Configuration
+    gcp_project_id: Optional[str] = Field(default=None, description="GCP Project ID")
+    gcp_location: str = Field(default="us-central1", description="GCP Location/Region")
+    gcp_credentials_path: Optional[str] = Field(default=None, description="Path to GCP service account JSON")
 
-    anthropic_api_key: Optional[str] = Field(default=None, description="Anthropic API key")
-    cohere_api_key: Optional[str] = Field(default=None, description="Cohere API key")
-    huggingface_api_key: Optional[str] = Field(default=None, description="HuggingFace API key")
+    # Vertex AI Model Configuration
+    vertex_model: str = Field(default="gemini-1.5-pro", description="Vertex AI model name")
+    vertex_temperature: float = Field(default=0.7, description="Model temperature")
+    vertex_max_tokens: int = Field(default=2048, description="Max output tokens")
+    vertex_top_p: float = Field(default=0.95, description="Top-p sampling")
+    vertex_top_k: int = Field(default=40, description="Top-k sampling")
 
-    # LangSmith Configuration
-    langsmith_api_key: Optional[str] = Field(default=None, description="LangSmith API key")
-    langsmith_project: str = Field(default="psyai-project", description="LangSmith project name")
-    langsmith_endpoint: str = Field(
-        default="https://api.smith.langchain.com",
-        description="LangSmith API endpoint",
+    # Vertex AI Embeddings Configuration
+    vertex_embedding_model: str = Field(
+        default="text-embedding-004",
+        description="Vertex AI embedding model"
     )
-    langsmith_tracing: bool = Field(default=True, description="Enable LangSmith tracing")
+    vertex_embedding_dimension: int = Field(default=768, description="Embedding dimension")
+
+    # Vertex AI Evaluation Configuration
+    vertex_eval_enabled: bool = Field(default=True, description="Enable Vertex AI evaluation")
+    vertex_eval_metrics: List[str] = Field(
+        default=["coherence", "fluency", "safety", "groundedness"],
+        description="Vertex AI evaluation metrics"
+    )
 
     # Centaur Model Configuration
     centaur_api_key: Optional[str] = Field(default=None, description="Centaur API key")
@@ -89,19 +96,18 @@ class Settings(BaseSettings):
     centaur_max_retries: int = Field(default=3, description="Max retries for Centaur API")
 
     # Vector Database Configuration
-    vector_db_type: str = Field(default="chroma", description="Vector DB type: chroma, pinecone, weaviate")
+    vector_db_type: str = Field(
+        default="vertex-vector-search",
+        description="Vector DB type: vertex-vector-search, chroma"
+    )
 
-    # Chroma
+    # Vertex AI Vector Search
+    vertex_index_id: Optional[str] = Field(default=None, description="Vertex Vector Search index ID")
+    vertex_index_endpoint_id: Optional[str] = Field(default=None, description="Vertex Vector Search endpoint ID")
+    vertex_deployed_index_id: Optional[str] = Field(default=None, description="Deployed index ID")
+
+    # Chroma (for backward compatibility)
     chroma_persist_directory: str = Field(default="./chroma_db", description="Chroma persistence directory")
-
-    # Pinecone
-    pinecone_api_key: Optional[str] = Field(default=None, description="Pinecone API key")
-    pinecone_environment: Optional[str] = Field(default=None, description="Pinecone environment")
-    pinecone_index_name: str = Field(default="psyai-index", description="Pinecone index name")
-
-    # Weaviate
-    weaviate_url: str = Field(default="http://localhost:8080", description="Weaviate URL")
-    weaviate_api_key: Optional[str] = Field(default=None, description="Weaviate API key")
 
     # Embedding Configuration
     embedding_model: str = Field(
@@ -181,7 +187,7 @@ class Settings(BaseSettings):
     @classmethod
     def validate_vector_db_type(cls, v: str) -> str:
         """Validate vector database type."""
-        allowed = ["chroma", "pinecone", "weaviate"]
+        allowed = ["vertex-vector-search", "chroma"]
         if v.lower() not in allowed:
             raise ValueError(f"vector_db_type must be one of {allowed}")
         return v.lower()
@@ -217,14 +223,8 @@ class Settings(BaseSettings):
         # Mask sensitive fields
         sensitive_fields = [
             "secret_key",
-            "openai_api_key",
-            "anthropic_api_key",
-            "cohere_api_key",
-            "huggingface_api_key",
-            "langsmith_api_key",
+            "gcp_credentials_path",
             "centaur_api_key",
-            "pinecone_api_key",
-            "weaviate_api_key",
             "sentry_dsn",
             "seed_admin_password",
             "database_url",

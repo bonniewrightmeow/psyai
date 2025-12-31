@@ -24,10 +24,10 @@ PsyAI is architected into two main layers:
 ### Platform Layer (Serial Development)
 Core infrastructure built sequentially with dependencies:
 1. **Core Infrastructure** - Configuration, logging, utilities
-2. **LangChain/LangGraph Integration** - Agentic workflow orchestration
-3. **LangSmith Integration** - Observability and evaluation
+2. **Vertex AI Integration** - Gemini models, agents, and workflow orchestration
+3. **Vertex AI Evaluation** - GenAI evaluation service for model assessment
 4. **Centaur Model Integration** - Decision alignment prediction
-5. **Storage Layer** - Database and caching
+5. **Storage Layer** - Database, caching, and Vertex AI Vector Search
 6. **API Framework** - REST and WebSocket APIs
 
 ### Feature Layer (Parallel Development)
@@ -46,10 +46,11 @@ Independent features built on the platform:
 ## Technology Stack
 
 - **Languages:** Python 3.11+
-- **Frameworks:** FastAPI, LangChain, LangGraph, LangSmith
-- **AI/ML:** OpenAI, Centaur Foundation Model
-- **Storage:** PostgreSQL, Redis, Chroma/Pinecone/Weaviate
-- **DevOps:** Docker, pytest, GitHub Actions
+- **Frameworks:** FastAPI, Google Vertex AI (Gemini), Vertex AI Vector Search
+- **AI/ML:** Vertex AI Gemini Models, Vertex AI Embeddings, Centaur Foundation Model
+- **Evaluation:** Vertex AI GenAI Evaluation Service
+- **Storage:** PostgreSQL, Redis, Vertex AI Vector Search, Chroma (legacy)
+- **DevOps:** Docker, pytest, GitHub Actions, Google Cloud Platform
 
 ## Quick Start
 
