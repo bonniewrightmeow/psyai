@@ -48,8 +48,17 @@ bash scripts/setup_dev.sh
 cp .env.example .env
 # Edit .env with your API keys
 
-# Start services
-docker-compose up -d
+# Required keys:
+# - ANTHROPIC_API_KEY
+# - LANGSMITH_API_KEY
+# - CENTAUR_API_KEY (when available)
+```
+
+3. **Start services:**
+```bash
+cd docker
+docker-compose up -d postgres redis
+```
 
 # Initialize database
 alembic upgrade head
