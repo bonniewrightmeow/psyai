@@ -38,7 +38,7 @@ PsyAI/
 
 ```bash
 # Clone repository
-git clone https://github.com/zayyanx/PsyAI.git
+git clone https://github.com/PsyAILabs/PsyAI.git
 cd PsyAI
 
 # Run automated setup
@@ -54,11 +54,12 @@ cp .env.example .env
 # - CENTAUR_API_KEY (when available)
 ```
 
-3. **Start services:**
+**Start services:**
+
 ```bash
 cd docker
 docker-compose up -d postgres redis
-```
+cd ..
 
 # Initialize database
 alembic upgrade head

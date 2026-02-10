@@ -69,7 +69,7 @@ Independent features built on the platform:
 
 ```bash
 # Clone repository
-git clone https://github.com/zayyanx/PsyAI.git
+git clone https://github.com/PsyAILabs/PsyAI.git
 cd PsyAI
 
 # Run setup script
