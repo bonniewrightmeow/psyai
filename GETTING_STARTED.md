@@ -38,7 +38,7 @@ PsyAI/
 
 ```bash
 # Clone repository
-git clone https://github.com/zayyanx/PsyAI.git
+git clone https://github.com/PsyAILabs/PsyAI.git
 cd PsyAI
 
 # Run automated setup
