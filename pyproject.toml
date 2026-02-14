@@ -115,10 +115,10 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/zayyanx/PsyAI"
-Documentation = "https://github.com/zayyanx/PsyAI/docs"
-Repository = "https://github.com/zayyanx/PsyAI"
-Issues = "https://github.com/zayyanx/PsyAI/issues"
+Homepage = "https://github.com/PsyAILabs/PsyAI"
+Documentation = "https://github.com/PsyAILabs/PsyAI/tree/main/docs"
+Repository = "https://github.com/PsyAILabs/PsyAI"
+Issues = "https://github.com/PsyAILabs/PsyAI/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
