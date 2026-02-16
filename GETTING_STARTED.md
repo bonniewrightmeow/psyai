@@ -267,5 +267,5 @@ A: All features must be complete and tested for study preparation.
 ## Getting Help
 
 - Open a GitHub issue
-- Consult the API documentation at `/docs`
+- Consult the documentation in `docs/` (and relevant `src/` docstrings)
 - Contact project maintainers

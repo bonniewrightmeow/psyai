@@ -28,6 +28,11 @@ Technical architecture and design documentation:
 - Database schemas
 - Integration patterns
 
+### `/development`
+Contributor-facing notes for local development:
+- Quick checks and test commands
+- Workflow tips
+
 ## Primary Research Document
 
 The main research outline is located at:
