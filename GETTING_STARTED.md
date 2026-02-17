@@ -36,34 +36,44 @@ PsyAI/
 
 ### Quick Setup (Recommended)
 
+1. **Clone the repository**
+
 ```bash
-# Clone repository
-git clone https://github.com/zayyanx/PsyAI.git
+git clone https://github.com/PsyAILabs/PsyAI.git
 cd PsyAI
+```
 
-# Run automated setup
+2. **Run automated setup**
+
+```bash
 bash scripts/setup_dev.sh
+```
 
-# Configure environment
+3. **Configure environment**
+
+```bash
 cp .env.example .env
 # Edit .env with your API keys
 
-# Required keys:
+# Common keys:
 # - ANTHROPIC_API_KEY
 # - LANGSMITH_API_KEY
 # - CENTAUR_API_KEY (when available)
 ```
 
-3. **Start services:**
+4. **Start services + run migrations**
+
 ```bash
 cd docker
 docker-compose up -d postgres redis
-```
 
 # Initialize database
 alembic upgrade head
+```
 
-# Run the API server
+5. **Run the API server**
+
+```bash
 uvicorn psyai.platform.api_framework:app --host 0.0.0.0 --port 8000 --reload
 ```
 
