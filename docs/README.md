@@ -1,55 +1,43 @@
 # PsyAI Documentation
 
-This directory contains research documentation, epic specifications, and architectural details for the PsyAI project.
+This directory contains project documentation (specs, research notes, and architectural details) for PsyAI.
 
-## Directory Structure
+## Directory structure (current)
 
-### `/research`
-Research papers, references, and theoretical foundations:
-- Research paper citations and summaries
-- Theoretical frameworks (Centaur Model, HITL, LLM-as-a-judge)
-- Study design and methodology
-- Data analysis plans
+### `docs/epics/`
+Epic and story specifications:
+- Epic 1: Centaur integration prototype
+- Epic 2: Expert review UI
+- Epic 3: Analytics dashboard
 
-### `/epics`
-Epic and story specifications from the research outline:
-- Epic 1: CENTAUR Model Integration Prototype
-- Epic 2: Expert Review User Interface
-- Epic 3: Analytics and Research Dashboard
-- User stories with acceptance criteria
-- Technical specifications per epic
+## Optional folders (create as needed)
 
-### `/architecture`
-Technical architecture and design documentation:
-- System architecture diagrams
-- Platform layer design
-- Feature layer design
-- API specifications
-- Database schemas
-- Integration patterns
+The following folders are referenced in some planning conversations but may not exist yet in the repo. Create them if/when you start adding content of that type:
 
-## Primary Research Document
+- `docs/research/` — papers, citations, study design, methodology, analysis plans
+- `docs/architecture/` — system design, API specs, DB schemas, diagrams
 
-The main research outline is located at:
+## Primary research document
+
+The main research outline lives at:
+
 ```
 Collaborative Writing/psyAI Research Paper - Outline 2.md
 ```
 
-This serves as the source of truth for:
+Use it as the source of truth for:
 - Research hypotheses and objectives
 - Epic and story definitions
 - Requirements and success metrics
-- Expected results
 
-## Contributing to Documentation
+## Contributing
 
-When adding documentation:
-1. Ensure alignment with the research outline
-2. Use clear, scientific writing principles
-3. Link to relevant code implementations
-4. Include diagrams where helpful
-5. Keep documentation up-to-date with code changes
+When adding docs:
+1. Keep terminology consistent with the research outline
+2. Prefer clear, testable language (acceptance criteria where applicable)
+3. Link to relevant code or issues/PRs
+4. Keep docs updated when code changes
 
-## For LLM Contributors
+## For LLM contributors
 
-Start with `PROJECT_CONTEXT.md` in the root directory for a comprehensive overview of the project, then dive into specific documentation areas as needed.
+Start with `PROJECT_CONTEXT.md` in the repo root for a high-level overview, then jump into `docs/epics/` for the current roadmap.
